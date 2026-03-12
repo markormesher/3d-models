@@ -1,7 +1,7 @@
 include <../BOSL2/std.scad>
 include <../BOSL2/threading.scad>
 
-$fn = $preview ? 18 : 90;
+$fn = $preview ? 18 : 180;
 
 peg_d = 46;
 peg_z = 65;

@@ -1,3 +1,5 @@
+$fn = $preview ? 18 : 180;
+
 ring_radius = 3;
 ring_thickness = 1;
 ring_angle = 260;

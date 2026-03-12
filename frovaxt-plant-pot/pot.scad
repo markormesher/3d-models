@@ -1,5 +1,6 @@
+$fn = $preview ? 18 : 180;
+
 fuzz = 0.1;
-$fn = 72;
 
 pot_diameter = 62;
 pot_height = 70;

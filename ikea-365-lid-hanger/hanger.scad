@@ -8,6 +8,7 @@ hook_count = 12;
 length = 150;
 screw_head_d = 6.2;
 screw_d = 3.3;
+screws_every_n_hooks = 6;
 
 // lid measurements - you shouldn't need to change these
 lid_thickness = 14;
@@ -77,12 +78,22 @@ diff() {
     }
   }
 
+  first_screw_x_offset = screw_head_d / 2 + total_width + lid_spacing / 2 - screw_head_d;
+  last_screw_x_offset = first_screw_x_offset + total_width * (hook_count - 2);
+  screw_x_spacing = total_width * screws_every_n_hooks;
+  screw_x_positions = flatten(
+    [
+      [for(x = first_screw_x_offset;x < last_screw_x_offset;x = min(x + screw_x_spacing, last_screw_x_offset))x],
+      last_screw_x_offset,
+    ]
+  );
+
   tag("remove") {
-    for (x = [0, 1]) {
+    for (x = screw_x_positions) {
       for (z = [0, 1]) {
         translate(
           [
-            screw_head_d / 2 + total_width + lid_spacing / 2 - screw_head_d + total_width * (hook_count - 2) * x,
+            x,
             0,
             screw_head_d / 2 + screw_head_d * 2 + (length - screw_head_d * 5) * z,
           ]

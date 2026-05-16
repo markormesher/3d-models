@@ -3,13 +3,16 @@ include <../BOSL2/std.scad>
 $fn = $preview ? 18 : 180;
 fuzz = 0.01;
 
-module hook(
-  d = 30,
-  thickness = 10,
-  wall = 2,
-  screw_d = 2.5,
-  screwdriver_d = 6,
-) {
+hook(
+  // edit these parameters
+  d=30,
+  thickness=10,
+  wall=2,
+  screw_d=2.5,
+  screwdriver_d=6,
+);
+
+module hook(d, thickness, wall, screw_d, screwdriver_d) {
   hook_outer_d = d + wall * 2;
   diff("r") {
     cyl(d=hook_outer_d, h=thickness, anchor=BOTTOM) {
@@ -59,5 +62,3 @@ module hook(
 //       hook(d=20 + x * 10, thickness=8 + y * 6, screw_d=2.5 + x * 2);
 //     }
 // }
-
-hook();

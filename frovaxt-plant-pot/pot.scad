@@ -1,116 +1,65 @@
+include <../BOSL2/std.scad>
+include <../BOSL2/threading.scad>
+
 $fn = $preview ? 18 : 180;
 
-fuzz = 0.1;
-
-pot_diameter = 62;
-pot_height = 70;
+fuzz = 0.01;
 
 wall_thickness = 1.5;
 
-ear_count = 3;
-ear_overhang = 9;
-ear_inner_height = 10;
-ear_locator_height = wall_thickness;
-ear_locator_tolerance = 0.2;
+pot_id = 61;
+pot_od = 72;
+pot_h = 100;
 
-drain_hole_diameter = 4;
-drain_ring_radius_1 = pot_diameter / 2 * 0.33;
-drain_ring_count_1 = floor(drain_ring_radius_1 * 2 * PI / (drain_hole_diameter * 3));
-drain_ring_radius_2 = pot_diameter / 2 * 0.66;
-drain_ring_count_2 = floor(drain_ring_radius_2 * 2 * PI / (drain_hole_diameter * 3));
+thread_pitch = 2;
+thread_slop = 0.2;
+thread = [
+  pot_id - wall_thickness * 2 - thread_slop * 4 - 2,
+  pot_id - wall_thickness * 2 - thread_slop * 4 - 1,
+  pot_id - wall_thickness * 2 - thread_slop * 4,
+];
+screw_h = 5;
 
-module main_pot() {
-  difference() {
-    // outer shell
-    cylinder(h=pot_height, r=pot_diameter / 2);
-
-    // main void
-    translate([0, 0, wall_thickness]) {
-      cylinder(h=pot_height, r=pot_diameter / 2 - wall_thickness);
-    }
-
-    // first ring of drain holes
-    for (i = [0:drain_ring_count_1]) {
-      translate(
-        [
-          drain_ring_radius_1 * cos(360 / drain_ring_count_1 * i),
-          drain_ring_radius_1 * sin(360 / drain_ring_count_1 * i),
-          -fuzz,
-        ]
-      ) {
-        cylinder(h=wall_thickness + fuzz * 2, r=drain_hole_diameter / 2);
+left(pot_od * 0.6) {
+  diff() {
+    cyl(d=pot_id, h=screw_h, anchor=BOTTOM) {
+      tag("remove") {
+        threaded_rod(d=thread, pitch=thread_pitch, h=screw_h + fuzz * 2, internal=true, $slop=thread_slop + 0.05);
       }
-    }
 
-    // second ring of drain holes
-    for (i = [0:drain_ring_count_2]) {
-      translate(
-        [
-          drain_ring_radius_2 * cos(360 / drain_ring_count_2 * i),
-          drain_ring_radius_2 * sin(360 / drain_ring_count_2 * i),
-          -fuzz,
-        ]
-      ) {
-        cylinder(h=wall_thickness + fuzz * 2, r=drain_hole_diameter / 2);
-      }
-    }
-
-    // cut-outs for ear locators
-    for (i = [0:ear_count - 1]) {
-      rotate([0, 0, 360 / ear_count * i]) {
-        translate(
-          [
-            -pot_diameter / 2 - fuzz,
-            -(wall_thickness + ear_locator_tolerance) / 2,
-            pot_height - ear_locator_height - ear_locator_tolerance,
-          ]
-        ) {
-          cube(
-            [
-              pot_diameter / 2 + fuzz,
-              wall_thickness + ear_locator_tolerance,
-              ear_locator_height + ear_locator_tolerance + fuzz,
-            ]
-          );
+      attach(TOP, BOTTOM) {
+        tube(od=pot_id, id=pot_id - wall_thickness * 2, h=pot_h - screw_h) {
+          attach(TOP, BOTTOM) {
+            tube(od=pot_od, id=pot_id - wall_thickness * 2, h=wall_thickness);
+          }
         }
       }
     }
   }
 }
 
-module ear() {
-  // top ear surface
-  difference() {
-    cylinder(h=wall_thickness, r=ear_overhang + wall_thickness);
+right(pot_od * 0.6) {
+  diff() {
+    cyl(d=pot_id, wall_thickness, anchor=BOTTOM) {
+      attach(TOP, BOTTOM) {
+        threaded_rod(d=thread, pitch=thread_pitch, h=screw_h);
+      }
 
-    translate([-pot_diameter / 2, 0, -fuzz]) {
-      cylinder(h=wall_thickness + fuzz * 2, r=pot_diameter / 2 - wall_thickness);
-    }
-  }
-
-  intersection() {
-    translate([-pot_diameter / 2 + wall_thickness, 0, 0])
-      // thin ring
-      difference() {
-        cylinder(h=ear_inner_height + wall_thickness, r=pot_diameter / 2 - wall_thickness);
-        translate([0, 0, -fuzz]) {
-          cylinder(h=ear_inner_height + wall_thickness + fuzz * 2, r=pot_diameter / 2 - wall_thickness * 2);
+      tag("remove") {
+        attach(TOP, BOTTOM, overlap=fuzz) {
+          cyl(d=thread[0] - wall_thickness * 2, h=screw_h + fuzz * 2);
         }
       }
 
-    translate([0, 0, -fuzz]) {
-      cylinder(h=ear_inner_height + wall_thickness + fuzz * 2, r=ear_overhang + wall_thickness);
+      tag("remove") {
+        cyl(d=2, h=wall_thickness + fuzz * 2);
+        arc_copies(n=8, r=pot_id / 6) {
+          cyl(d=2, h=wall_thickness + fuzz * 2);
+        }
+        arc_copies(n=16, r=pot_id / 3) {
+          cyl(d=2, h=wall_thickness + fuzz * 2);
+        }
+      }
     }
   }
-
-  // locator
-  translate([-wall_thickness / 2, -wall_thickness / 2, wall_thickness]) {
-    cube([wall_thickness * 1.5, wall_thickness, ear_locator_height]);
-  }
-}
-
-main_pot();
-for (i = [0:ear_count - 1]) {
-  // overkill to space them nicely and centred, but who cares
-  translate([pot_diameter, ear_overhang * 3 * i - (ear_overhang * 3 * (ear_count - 1) / 2), 0]) ear();
 }

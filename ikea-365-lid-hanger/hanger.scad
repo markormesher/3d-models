@@ -32,7 +32,7 @@ module single(left_end = false, right_end = false) {
         rect(
           [total_width, total_height],
           anchor=FRONT + LEFT,
-          chamfer=right_end ? [end_chamf, 0, 0, end_chamf] : 0,
+          chamfer=right_end ? [end_chamf, 0, 0, end_chamf] : 0
         ) {
 
           // main slot

@@ -12,7 +12,7 @@ Every model has one or more ready-to-print STL files on [Printables](https://www
 Editing and exporting OpenSCAD models is easier than you'd think:
 
 1. Download and install [OpenSCAD](https://openscad.org/downloads.html).
-1. Clone this repository, or [click here](https://github.com/markormesher/3d-models/archive/refs/heads/main.zip) to download it as a zip.
+1. Clone this repository, and the BOSL2 library, by running `git clone --recurse-submodules https://github.com/markormesher/3d-models.git` (or use SSH to clone if you prefer).
 1. Open the `.scad` file for the model in OpenSCAD.
 1. Look for the parameters section, usually towards the top of the file and clearly labelled.
 1. Press `F5` to preview your changes, or `F6` to produce a full render (for most models the preview is lower resolution but builds much faster).
